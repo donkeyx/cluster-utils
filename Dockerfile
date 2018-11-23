@@ -12,8 +12,13 @@ ENV LC_ALL en_AU.UTF-8
 ENV LC_CTYPE=en_AU.UTF-8
 ENV TZ="Australia/Adelaide"
 
+# networking and routing tools
 RUN apt-get update && apt install -y \
     net-tools telnet dnsutils inetutils-traceroute \
     curl jq \
     postgresql redis-tools mongodb-clients \
+    && rm -rf /var/lib/apt/lists/*
+
+# node libs for test scripts
+RUN apt-get update && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
