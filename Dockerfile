@@ -20,5 +20,7 @@ RUN apt-get update && apt install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # node libs for test scripts
-RUN apt-get update && apt-get install -y nodejs \
+RUN apt-get update && apt-get install -y \
+    nodejs \
+    npm \
     && rm -rf /var/lib/apt/lists/*
