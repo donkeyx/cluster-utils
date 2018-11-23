@@ -18,7 +18,8 @@ RUN apt-get update && apt install -y \
     curl jq \
 
 # client tools for db + redis/mongo
-RUN postgresql redis-tools mongodb-clients \
+RUN apt-get update && apt install -y \
+    postgresql redis-tools mongodb-clients \
     && rm -rf /var/lib/apt/lists/*
 
 # node libs for test scripts
