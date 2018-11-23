@@ -16,11 +16,19 @@ ENV TZ="Australia/Adelaide"
 RUN apt-get update && apt install -y \
     net-tools telnet dnsutils inetutils-traceroute \
     curl jq \
-    postgresql redis-tools mongodb-clients \
+
+# client tools for db + redis/mongo
+RUN postgresql redis-tools mongodb-clients \
     && rm -rf /var/lib/apt/lists/*
 
 # node libs for test scripts
 RUN apt-get update && apt-get install -y \
     nodejs \
+    git \
     npm \
     && rm -rf /var/lib/apt/lists/*
+
+# decent prompt
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
+CMD ["zsh"]
