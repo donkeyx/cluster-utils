@@ -29,8 +29,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # decent prompt
-RUN apt-get update && apt-get install -y zsh \
-    && sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" | zsh || true
+RUN apt-get update && apt-get install -y \
+    zsh screenfetch \
+    && sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" | zsh || true \
+    && echo "screenfetch" >> ~/.zshrc
 
 CMD ["zsh"]
 
