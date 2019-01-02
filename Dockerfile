@@ -31,7 +31,7 @@ RUN apt-get update && apt install -y \
 RUN apt-get update && apt-get install -y \
     zsh screenfetch \
     && sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" | zsh || true \
-    && echo "screenfetch" >> ~/.zshrc
+    && echo "screenfetch" >> ~/.zshrc \
     && rm -rf /var/lib/apt/lists/*
 
 CMD ["zsh"]
