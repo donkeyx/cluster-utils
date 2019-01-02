@@ -34,5 +34,5 @@ RUN apt-get update && apt-get install -y \
     && echo "screenfetch" >> ~/.zshrc \
     && rm -rf /var/lib/apt/lists/*
 
-CMD ["zsh"]
+ENTRYPOINT ["zsh"]
 
