@@ -14,7 +14,7 @@ ENV TZ="Australia/Adelaide"
 
 
 # client tools for db + redis/mongo
-RUN apt-get update && apt install -y \
+RUN apt-get update && apt-get install -y \
     # net utils
     net-tools telnet dnsutils inetutils-traceroute \
     curl jq \
