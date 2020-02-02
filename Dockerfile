@@ -11,7 +11,8 @@ WORKDIR /tmp
 
 RUN apt-get update \
     && apt-get install -y \
-    locales && locale-gen en_AU.UTF-8 && dpkg-reconfigure locales
+    locales && locale-gen en_AU.UTF-8 && dpkg-reconfigure locales \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update \
     && apt-get install -y \
