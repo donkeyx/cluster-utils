@@ -1,0 +1,57 @@
+version: 2.0
+
+workflows:
+  version: 2
+
+  cluster-utils-workflow:
+    jobs:
+      - build
+      # - deploy:
+      #     requires:
+      #       - setup
+
+jobs:
+  build:
+    machine:
+      image: ubuntu-1604:201903-01
+      # docker_layer_caching: true
+    steps:
+      - checkout
+      - run:
+          name: dockerhub login for image push
+          command: |
+            docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
+            docker build -t donkeyx/cluster-utils .
+
+            docker tag donkeyx/cluster-utils donkeyx/cluster-utils:circleci-${CIRCLE_SHA1}
+            docker push donkeyx/cluster-utils:circleci-${CIRCLE_SHA1}
+
+            docker tag donkeyx/cluster-utils donkeyx/cluster-utils:latest
+            docker push donkeyx/cluster-utils:latest
+  # deploy:
+  #   docker:
+  #     - image: donkeyx/build-containers:latest
+  #   steps:
+  #     - run:
+  #         name: Initialize & Authenticate gcloud SDK
+  #         command: |
+  #           pwd
+  #           whoami
+  #           which bash
+  #           ls -la /
+  #           echo $PATH
+  #           source /root/.bashrc
+  #           cat /root/.bashrc
+  #           echo "${GKE_SERVICE_ACCOUNT}" | base64 --decode >> /tmp/gcp_key.json
+  #           gcloud auth activate-service-account --key-file /tmp/gcp_key.json --project the-investment-helper
+  #           gcloud config set project edens-gate-com
+  #           gcloud config set compute/zone us-central1-a
+  #           # does cluster exist? Create or load credentials
+  #           if gcloud container clusters describe edens-gate-com --region us-central1-a > /dev/null ;then
+  #             echo "Our cluster exists, pull credentials into kubectl"
+  #             kubectl get pods -wide
+  #             #gcloud container clusters get-credentials circleci-k8s-demo
+  #           else
+  #             echo "Creating cluster for first time"
+  #             #gcloud container clusters create circleci-k8s-demo --num-nodes=2
+  #           fi
