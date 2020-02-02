@@ -15,43 +15,47 @@ jobs:
     machine:
       image: ubuntu-1604:201903-01
       # docker_layer_caching: true
+    environment:
+      build_container: "build_container"
+      dockerhub_repo: "donkeyx/cluster-utils"
+      github_repo: "docker.pkg.github.com/donkeyx/docker_cluster-utils/cluster-utils"
+
     steps:
       - checkout
       - run:
           name: dockerhub login for image push
           command: |
+            docker build -t $build_container .
+
+      - run:
+          name: tag and push dockerhub
+          command: |
+            # dockerhub_repo="donkeyx/cluster-utils"
+            docker tag $build_container $dockerhub_repo:latest
+            docker tag $build_container $dockerhub_repo:circleci-${CIRCLE_SHA1}
+
             docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
-            docker build -t donkeyx/cluster-utils .
+            docker push $dockerhub_repo:circleci-${CIRCLE_SHA1}
+            docker push $dockerhub_repo:latest
 
-            docker tag donkeyx/cluster-utils donkeyx/cluster-utils:circleci-${CIRCLE_SHA1}
-            docker push donkeyx/cluster-utils:circleci-${CIRCLE_SHA1}
+      - run:
+          name: tag and push github
+          command: |
+            # github_repo="docker.pkg.github.com/donkeyx/docker_cluster-utils/cluster-utils"
 
-            docker tag donkeyx/cluster-utils donkeyx/cluster-utils:latest
-            docker push donkeyx/cluster-utils:latest
-  # deploy:
-  #   docker:
-  #     - image: donkeyx/build-containers:latest
-  #   steps:
-  #     - run:
-  #         name: Initialize & Authenticate gcloud SDK
-  #         command: |
-  #           pwd
-  #           whoami
-  #           which bash
-  #           ls -la /
-  #           echo $PATH
-  #           source /root/.bashrc
-  #           cat /root/.bashrc
-  #           echo "${GKE_SERVICE_ACCOUNT}" | base64 --decode >> /tmp/gcp_key.json
-  #           gcloud auth activate-service-account --key-file /tmp/gcp_key.json --project the-investment-helper
-  #           gcloud config set project edens-gate-com
-  #           gcloud config set compute/zone us-central1-a
-  #           # does cluster exist? Create or load credentials
-  #           if gcloud container clusters describe edens-gate-com --region us-central1-a > /dev/null ;then
-  #             echo "Our cluster exists, pull credentials into kubectl"
-  #             kubectl get pods -wide
-  #             #gcloud container clusters get-credentials circleci-k8s-demo
-  #           else
-  #             echo "Creating cluster for first time"
-  #             #gcloud container clusters create circleci-k8s-demo --num-nodes=2
-  #           fi
+            docker login docker.pkg.github.com --username $GITHUB_USER --password $GITHUB_PASSWORD
+
+            docker tag $build_container $repo:latest
+            docker push $repo:latest
+
+            docker tag $build_container $github_repo:circleci-${CIRCLE_SHA1}
+            docker push $github_repo:circleci-${CIRCLE_SHA1}
+
+#  # Step 1: Authenticate
+# $ docker login docker.pkg.github.com --username donkeyx
+
+# # Step 2: Tag
+# $ docker tag IMAGE_ID docker.pkg.github.com/donkeyx/docker_cluster-utils/IMAGE_NAME:VERSION
+
+# # Step 3: Publish
+# $ docker push docker.pkg.github.com/donkeyx/docker_cluster-utils/IMAGE_NAME:VERSION
