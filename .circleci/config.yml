@@ -31,7 +31,6 @@ jobs:
       - run:
           name: tag and push dockerhub
           command: |
-            # dockerhub_repo="donkeyx/cluster-utils"
             docker tag $build_container $dockerhub_repo:latest
             docker tag $build_container $dockerhub_repo:circleci-${CIRCLE_SHA1}
 
@@ -42,8 +41,6 @@ jobs:
       - run:
           name: tag and push github
           command: |
-            # github_repo="docker.pkg.github.com/donkeyx/docker_cluster-utils/cluster-utils"
-
             docker login docker.pkg.github.com --username $GITHUB_USER --password $GITHUB_PASS
 
             docker tag $build_container $github_repo:latest
