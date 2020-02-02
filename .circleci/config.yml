@@ -44,7 +44,7 @@ jobs:
           command: |
             # github_repo="docker.pkg.github.com/donkeyx/docker_cluster-utils/cluster-utils"
 
-            docker login docker.pkg.github.com --username $GITHUB_USER --password $GITHUB_PASSWORD
+            docker login docker.pkg.github.com --username $GITHUB_USER --password $GITHUB_PASS
 
             docker tag $build_container $github_repo:latest
             docker push $github_repo:latest
