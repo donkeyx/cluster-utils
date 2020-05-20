@@ -1,4 +1,4 @@
-# cluster-utils-api
+# cluster-utils
 
 ## description
 
