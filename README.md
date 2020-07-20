@@ -31,26 +31,23 @@ Now the pod is running, you can exec into it and.. do whatever you need within t
 your cluster/namespace.
 ```bash
 # jump into container with zsh shell + ohmyzsh
-kubectl -n default exec -it cluster-utils zsh
-                          ./+o+-       root@cluster-utils
-                  yyyyy- -yyyyyy+      OS: Ubuntu 18.04 bionic
-               ://+//////-yyyyyyo      Kernel: x86_64 Linux 4.14.150+
-           .++ .:/++++++/-.+sss/`      Uptime: 16h 32m
-         .:++o:  /++++++++/:--:/-      Packages: 390
-        o:+o+:++.`..```.-/oo+++++/     Shell: zsh 5.4.2
-       .:+o:+o/.          `+sssoo+/    CPU: Intel Xeon @ 2.2GHz
-  .++/+:+oo+o:`             /sssooo.   GPU:
- /+++//+:`oo+o               /::--:.   RAM: 708MiB / 3697MiB
- \+/+o+++`o++o               ++////.
-  .++.o+++oo+:`             /dddhhh.
-       .+.o+oo:.          `oddhhhh+
-        \+.++o+o``-````.:ohdhhhhh+
-         `:o+++ `ohhhhhhhhyo++os:
-           .o:`.syhhhhhhh/.oo++o`
-               /osyyyyyyo++ooo+++/
-                   ````` +oo+++o\:
-                          `oo++.
-➜  /tmp
+        ................           root@5341f0387b50
+       ∴::::::::::::::::∴          OS: Alpine Linux
+      ∴::::::::::::::::::∴         Kernel: x86_64 Linux 4.19.76-linuxkit
+     ∴::::::::::::::::::::∴        Uptime: 6d 19h 30m
+    ∴:::::::. :::::':::::::∴       Packages: 67
+   ∴:::::::.   ;::; ::::::::∴      Shell: ash
+  ∴::::::;      ∵     :::::::∴     Disk:  /  ()
+ ∴:::::.     .         .::::::∴    CPU: Intel Core i7-7700HQ @ 4x 2.8GHz
+ ::::::     :::.    .    ::::::    RAM: 463MiB / 1991MiB
+ ∵::::     ::::::.  ::.   ::::∵
+  ∵:..   .:;::::::: :::.  :::∵
+   ∵::::::::::::::::::::::::∵
+    ∵::::::::::::::::::::::∵
+     ∵::::::::::::::::::::∵
+      ::::::::::::::::::::
+       ∵::::::::::::::::∵
+
 ```
 
 

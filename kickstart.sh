@@ -1,30 +1,34 @@
-#!/usr/bin/env bash
-# set -eou pipefail
+#!/usr/bin/env sh
+set -eou pipefail
 
-apt-get update
+# apk update
 
-# echo "--- network tools ---"
-apt-get install -y apt-utils net-tools telnet dnsutils inetutils-traceroute iputils-ping netcat curl wget
+echo "--- network tools ---"
+apk add --no-cache bind-tools netcat-openbsd curl
 
-# echo "--- general stuff ---"
-apt-get install -y git jq vim tmux zsh
+echo "--- general stuff ---"
+apk add --no-cache git jq vim tmux zsh
 
-# echo "--- clients ---"
-apt-get install -y postgresql redis-tools mongo-tools
+echo "--- clients ---"
+apk add --no-cache postgresql-client redis mongodb-tools
 
 echo "--- dev libs ---"
-apt-get install -y git nodejs npm golang
-
+apk add --no-cache git nodejs #go
 
 # # decent prompt
 echo "--- prompt setup zsh ---"
-apt-get install -y screenfetch zsh
+
+apk add --no-cache zsh
 sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+
+curl -L https://github.com/tsenart/vegeta/releases/download/v12.8.3/vegeta-12.8.3-linux-amd64.tar.gz | tar -xz
+mv vegeta /usr/local/bin
+
+apk add --no-cache screenfetch --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing
 
 echo "screenfetch" >> ~/.zshrc
 echo "export PATH=$HOME/go/bin:$PATH" >> ~/.zshrc
 
-go get github.com/tsenart/vegeta
 
-echo "--- cleanup ---"
-rm -rf /var/lib/apt/lists/*
+# echo "--- cleanup ---"
+# rm -vrf /var/cache/apk/*
