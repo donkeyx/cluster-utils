@@ -32,7 +32,7 @@ jobs:
           name: tag and push dockerhub
           command: |
             echo "$DOCKERHUB_PASS" | docker login --username $DOCKERHUB_USER --password-stdin
-            
+
             docker tag $build_container $dockerhub_repo:latest
             docker tag $build_container $dockerhub_repo:circleci-${CIRCLE_SHA1}
 
@@ -42,7 +42,7 @@ jobs:
       - run:
           name: tag and push github
           command: |
-            echo $GITHUB_PASS | docker login docker.pkg.github.com --username $GITHUB_USER --password-stdin
+            echo $GITHUB_TOKEN | docker login docker.pkg.github.com -u $GITHUB_USER --password-stdin
 
             docker tag $build_container $github_repo:latest
             docker push $github_repo:latest
