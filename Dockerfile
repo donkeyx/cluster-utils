@@ -7,11 +7,11 @@ FROM alpine
 ENV TZ="Australia/Adelaide"
 # ENV DEBIAN_FRONTEND "noninteractive apt-get autoremove"
 
-WORKDIR /tmp
+WORKDIR /app
 
-COPY ./*.sh /tmp/
+COPY ./*.sh /app/
 RUN ./kickstart.sh
 
 
-ENTRYPOINT ["sh", "/tmp/sleeper.sh"]
+ENTRYPOINT ["sh", "/app/sleeper.sh"]
 

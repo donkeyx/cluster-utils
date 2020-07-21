@@ -33,3 +33,5 @@ echo "export PATH=$HOME/go/bin:$PATH" >> ~/.zshrc
 echo "--- cleanup ---"
 rm -rf /var/cache/apk/* && \
     rm -rf /tmp/*
+
+apk update
