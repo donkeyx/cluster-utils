@@ -11,3 +11,5 @@ spec:
       env:
         - name: RUNTIME
           value: "1800"
+  restartPolicy: Never
+
