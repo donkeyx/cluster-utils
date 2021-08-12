@@ -6,7 +6,7 @@ metadata:
     purpose: testing
 spec:
   containers:
-    - name: cluseter-utils
+    - name: cluster-utils
       image: donkeyx/cluster-utils:latest
       env:
         - name: RUNTIME
