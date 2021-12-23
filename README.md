@@ -1,9 +1,9 @@
 # cluster-utils
 
-## description
+## Description
 
 Sample docker image to give you a bash session into your cluster, with lots of tools for testing
-network routes etc. I find it super handy when i am testing iotio routes/dns and security group
+network routes etc. I find it super handy when i am testing istio routes/dns and security group
 access.
 
 This container will by default run for 30mins before exiting. You can override this behavior
@@ -19,7 +19,7 @@ in the default namespace and timeout in 30mins.
 ```bash
 # apply pod config with default 30min timeout
 kubectl -n default \
-    apply -f https://raw.githubusercontent.com/donkeyx/docker_cluster-utils/master/k8s-cluter-utils.yml
+    apply -f https://raw.githubusercontent.com/donkeyx/docker_cluster-utils/master/k8s-cluster-utils.yml
 
 # list the pod
 $ kubectl get pods -n default
@@ -84,7 +84,7 @@ $ docker exec -it cluster-utils zsh
 
 ```
 
-### Some useful command and packages availabe
+### Some useful command and packages available
 
 ```bash
 
