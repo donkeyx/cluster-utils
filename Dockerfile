@@ -10,6 +10,12 @@ ENV TZ="Australia/Adelaide"
 WORKDIR /app
 
 COPY ./*.sh /app/
+RUN apk add --no-cache \
+    bind-tools netcat-openbsd curl \
+    git jq vim tmux zsh \
+    postgresql-client redis mongodb-tools \
+    git nodejs
+
 RUN ./kickstart.sh
 
 
