@@ -19,7 +19,7 @@ in the default namespace and timeout in 30mins.
 ```bash
 # apply pod config with default 30min timeout
 kubectl -n default \
-    apply -f https://raw.githubusercontent.com/donkeyx/docker_cluster-utils/master/k8s-cluster-utils.yml
+    apply -f https://raw.githubusercontent.com/donkeyx/cluster-utils/master/k8s-cluster-utils.yml
 
 # list the pod
 $ kubectl get pods -n default
@@ -57,8 +57,8 @@ You can build the image locally if you like and then push to your own repo for t
 
 ```bash
 # clone repo
-git@github.com:donkeyx/docker_cluster-utils.git
-cd docker_cluster-utils
+git@github.com:donkeyx/cluster-utils.git
+cd cluster-utils
 
 # build and tag
 docker build . -t donkeyx/cluster-utils
