@@ -10,6 +10,8 @@ This container will by default run for 30mins before exiting. You can override t
 by modifying the env param ```RUNTIME=1234```. This can be done in the kubes pod definition or
 passed to docker at runtime.
 
+* dockerhub :  https://hub.docker.com/r/donkeyx/cluster-utils
+
 ## Usage
 
 ### run image in k8 cluster:
