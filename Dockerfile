@@ -1,23 +1,27 @@
-FROM alpine
+# Description: Dockerfile for the Sleeper service
+FROM debian:slim
 
-# ENV LANG en_AU.UTF-8
-# ENV LANGUAGE en_AU.UTF-8
-# ENV LC_ALL en_AU.UTF-8
-# ENV LC_CTYPE=en_AU.UTF-8
+# Metadata
+ARG VERSION=latest
+LABEL maintainer="David Binney <donkeysoft@gmail.com>"
+LABEL version=$VERSION
+LABEL description="This is a custom Docker image for the Sleeper service."
+
 ENV TZ="Australia/Adelaide"
-# ENV DEBIAN_FRONTEND "noninteractive apt-get autoremove"
 
 WORKDIR /app
 
 COPY ./*.sh /app/
-RUN apk add --no-cache \
-    bind-tools netcat-openbsd curl \
+RUN apt-get update && apt-get install -y \
+    dnsutils netcat curl \
     git jq vim tmux zsh \
-    postgresql-client redis mongodb-tools \
-    git nodejs
+    postgresql-client redis-tools mongodb-tools \
+    git nodejs npm golang && \
+    npm install -g yarn && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    chsh -s $(which zsh)
 
 RUN ./kickstart.sh
 
-
 ENTRYPOINT ["sh", "/app/sleeper.sh"]
-

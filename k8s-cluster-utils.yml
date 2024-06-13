@@ -3,6 +3,7 @@ kind: Pod
 metadata:
   name: cluster-utils
   labels:
+    app: cluster-utils
     purpose: testing
 spec:
   containers:
@@ -12,4 +13,3 @@ spec:
         - name: RUNTIME
           value: "1800"
   restartPolicy: Never
-
