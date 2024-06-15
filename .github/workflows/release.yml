@@ -25,12 +25,8 @@ jobs:
         uses: actions/checkout@v3
 
       # ################################
-      # create release and push assets 
-      # ################################ 
-      - name: Build go binaries
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          make build-all
+      # create release and push assets
+      # ################################
 
       - name: Release to github with Notes
         uses: softprops/action-gh-release@v1
