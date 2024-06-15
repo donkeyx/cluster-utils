@@ -2,8 +2,10 @@ name: Docker build and push
 
 on:
   push:
+    branches:
+      - '*'
     tags:
-      - "v*"
+      - 'v*'
 
 jobs:
   cache:
