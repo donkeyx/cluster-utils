@@ -1,15 +1,18 @@
-apiVersion: v1
-kind: Pod
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: cluster-utils
   labels:
     app: cluster-utils
     purpose: testing
 spec:
-  containers:
-    - name: cluster-utils
-      image: donkeyx/cluster-utils:latest
-      env:
-        - name: RUNTIME
-          value: "1800"
-  restartPolicy: Never
+  template:
+    spec:
+      containers:
+        - name: cluster-utils
+          image: donkeyx/cluster-utils:latest
+          env:
+            - name: RUNTIME
+              value: "1800"
+      restartPolicy: Never
+  ttlSecondsAfterFinished: 1800
