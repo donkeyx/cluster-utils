@@ -32,24 +32,39 @@ cluster-utils   1/1     Running   0          2m18s
 Now the pod is running, you can exec into it and.. do whatever you need within the context of
 your cluster/namespace.
 ```bash
-# jump into container with zsh shell + ohmyzsh
-        ................           root@5341f0387b50
-       ∴::::::::::::::::∴          OS: Alpine Linux
-      ∴::::::::::::::::::∴         Kernel: x86_64 Linux 4.19.76-linuxkit
-     ∴::::::::::::::::::::∴        Uptime: 6d 19h 30m
-    ∴:::::::. :::::':::::::∴       Packages: 67
-   ∴:::::::.   ;::; ::::::::∴      Shell: ash
-  ∴::::::;      ∵     :::::::∴     Disk:  /  ()
- ∴:::::.     .         .::::::∴    CPU: Intel Core i7-7700HQ @ 4x 2.8GHz
- ::::::     :::.    .    ::::::    RAM: 463MiB / 1991MiB
- ∵::::     ::::::.  ::.   ::::∵
-  ∵:..   .:;::::::: :::.  :::∵
-   ∵::::::::::::::::::::::::∵
-    ∵::::::::::::::::::::::∵
-     ∵::::::::::::::::::::∵
-      ::::::::::::::::::::
-       ∵::::::::::::::::∵
+$ kubectl exec -it cluster-utils -- zsh
 
+awk: cannot open /proc/fb (No such file or directory)
+         _,met$$$$$gg.           root@c8b5eabe6232
+      ,g$$$$$$$$$$$$$$$P.        OS: Debian 10 buster
+    ,g$$P""       """Y$$.".      Kernel: x86_64 Linux 5.15.153.1-microsoft-standard-WSL2
+   ,$$P'              `$$$.      Uptime: 14h 13m
+  ',$$P       ,ggs.     `$$b:    Packages: 546
+  `d$$'     ,$P"'   .    $$$     Shell: sh
+   $$P      d$'     ,    $$P     CPU: AMD Ryzen 5 3600 6-Core @ 12x 3.6GHz
+   $$:      $$.   -    ,d$$'     GPU:
+   $$\;      Y$b._   _,d$P'      RAM: 1957MiB / 15959MiB
+   Y$$.    `.`"Y$$$$P"'
+   `$$b      "-.__
+    `Y$$
+     `Y$$.
+       `$$b.
+         `Y$$b.
+            `"Y$b._
+                `""""
+
+This container is useful for cluster and network testing with many tools.
+
+database connection tools:
+- psql, redis-cli, mongo
+network testing tools:
+- curl, wget, ping, traceroute, mtr, nmap, tcpdump, netcat
+performance testing tools:
+- vegeta, k6
+programming languages:
+- golang, python, nodejs
+shell:
+- zsh with oh-my-zsh
 ```
 
 
@@ -96,7 +111,10 @@ nc -z -v -w5 10.1.1.51 8080
 # check dns
 dig google.com
 
+# curl your internal service
+curl my-internal-service.default.cluster.local | jq
+
 # traceroute path for request
-traceroute my-internal-service.com
+traceroute my-internal-service.default.cluster.local
 
 ```
