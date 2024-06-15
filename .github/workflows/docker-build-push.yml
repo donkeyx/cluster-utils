@@ -17,7 +17,6 @@ jobs:
         with:
           path: |
             /tmp/.buildx-cache
-        with:
           key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
 
   docker:
