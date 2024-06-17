@@ -57,6 +57,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+          logout: true
+
 
       - name: Login to GitHub Container Registry
         if: github.event_name != 'pull_request'
