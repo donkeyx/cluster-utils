@@ -1,4 +1,4 @@
-# Description: Dockerfile for the Sleeper service
+# Description: This is a utility container with all the tools needed for testing clusters and networks
 FROM debian:bookworm-slim
 
 # Metadata
@@ -16,23 +16,8 @@ COPY ./*.sh /app/
 # Update and install basic tools
 RUN apt-get update && apt-get install -y \
     dnsutils netcat-openbsd curl wget tar gnupg vim tmux zsh screenfetch && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install database clients
-RUN apt-get update && apt-get install -y \
     postgresql-client redis-tools && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install programming languages and tools
-RUN apt-get update && apt-get install -y \
-    git golang && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install -y \
-    nodejs npm && \
+    git golang nodejs npm && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
