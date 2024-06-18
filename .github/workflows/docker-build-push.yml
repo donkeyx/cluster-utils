@@ -22,6 +22,6 @@ jobs:
         with:
           # username: ${{ vars.DOCKERHUB_USERNAME }}
           # password: ${{ secrets.DOCKERHUB_TOKEN }}
-          username: "dog"
-          password: "cat"
+          username: "${{ vars.DOCKERHUB_USERNAME }}"
+          password: "${{ secrets.DOCKERHUB_TOKEN }}"
           logout: true
