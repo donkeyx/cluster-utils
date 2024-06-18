@@ -1,11 +1,11 @@
-# Description: This is a utility container with all the tools needed for testing clusters and networks
+# Description: Dockerfile cluster utils service
 FROM debian:bookworm-slim
 
 # Metadata
 ARG VERSION=latest
 LABEL maintainer="David Binney <donkeysoft@gmail.com>"
 LABEL version=$VERSION
-LABEL description="This container is a utility for testing within cluster or networks and not needing to install tooling"
+LABEL description="This is a utility for testing within cluster or networks and not needing to install tooling"
 
 ENV TZ="Australia/Adelaide"
 
