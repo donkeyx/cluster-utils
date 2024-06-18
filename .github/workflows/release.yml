@@ -1,6 +1,12 @@
 name: Release
 
 on:
+  workflow_run:
+    workflows: ["Docker build and push"]
+    tags: [ 'v*.*.*' ]
+    types:
+      - completed
+
   push:
     tags: [ 'v*.*.*' ]
 
