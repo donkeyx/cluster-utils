@@ -8,6 +8,18 @@ on:
       - 'v*'
 
 jobs:
+  cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: |
+            /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
 
   docker:
     needs: cache
