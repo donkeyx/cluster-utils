@@ -22,6 +22,7 @@ jobs:
   docker:
     needs: cache
     runs-on: ubuntu-latest
+    environment: ci
     permissions:
       contents: write
       packages: write
