@@ -8,13 +8,8 @@ on:
       - 'v*'
 
 jobs:
-  cache:
-    runs-on: ubuntu-latest
-    steps:
-      # ... (other steps)
 
   docker:
-    needs: cache
     runs-on: ubuntu-latest
     permissions:
       contents: write
