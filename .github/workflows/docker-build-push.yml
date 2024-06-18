@@ -27,4 +27,4 @@ jobs:
       #     logout: true
 
       - name: testing
-        run: echo asdfadsf| docker login -u donkeyx --password-stdin
+        run: echo ${{ secrets.DOCKERHUB_TOKEN }}| docker login -u donkeyx --password-stdin
