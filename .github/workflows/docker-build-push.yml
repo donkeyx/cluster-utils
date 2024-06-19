@@ -56,12 +56,14 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-        ghcr.io/donkeyx/cluster-utils
-        docker.io/donkeyx/cluster-utils
+            ghcr.io/donkeyx/cluster-utils
+            docker.io/donkeyx/cluster-utils
           tags: |
-        type=semver,pattern={{version}}
-        type=semver,pattern={{major}}
-        type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}
+            type=semver,pattern={{major}}.{{minor}}
+          branches: |
+            release/*
 
       - name: Build and push
         uses: docker/build-push-action@v5
