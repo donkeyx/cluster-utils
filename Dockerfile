@@ -16,11 +16,20 @@ COPY ./*.sh /app/
 # Update and install basic tools
 RUN apt-get update && apt-get install -y \
     dnsutils netcat-openbsd curl wget tar gnupg vim tmux zsh screenfetch && \
-    postgresql-client redis-tools && \
-    git golang nodejs npm && \
-    apt-get clean &&
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# rm -rf /var/lib/apt/lists/*
+# Install PostgreSQL client and Redis tools
+RUN apt-get update && apt-get install -y \
+    postgresql-client redis-tools && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Git, Go, Node.js, and npm
+RUN apt-get update && apt-get install -y \
+    git golang nodejs npm && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # # Install MongoDB tools
 # RUN curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor && \
