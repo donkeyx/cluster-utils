@@ -58,6 +58,8 @@ jobs:
             ghcr.io/donkeyx/cluster-utils
             docker.io/donkeyx/cluster-utils
           tags: |
+            type=sha
+            type=ref,event=branch
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}
             type=semver,pattern={{major}}.{{minor}}
