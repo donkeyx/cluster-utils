@@ -64,8 +64,11 @@ jobs:
           branches: |
             release/*
 
-      - name: Debug Metadata Output
-        run: echo "Tags: ${{ steps.meta.outputs.tags }}"
+      - name: Print Metadata Outputs
+        run: |
+          echo "Tags: ${{ steps.meta.outputs.tags }}"
+          echo "Labels: ${{ steps.meta.outputs.labels }}"
+          echo "Images: ${{ steps.meta.outputs.images }}"
 
       - name: Build and push
         uses: docker/build-push-action@v5
