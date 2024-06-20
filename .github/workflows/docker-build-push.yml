@@ -3,6 +3,8 @@ on:
   push:
     tags:
       - "v*"
+    branches:
+      - "release/*"
 
 jobs:
   cache:
@@ -14,8 +16,7 @@ jobs:
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
-          path: |
-            /tmp/.buildx-cache
+          path: /tmp/.buildx-cache
           key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
 
   docker:
@@ -57,9 +58,21 @@ jobs:
             ghcr.io/donkeyx/cluster-utils
             docker.io/donkeyx/cluster-utils
           tags: |
+            type=sha
+            type=ref,event=branch
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}
             type=semver,pattern={{major}}.{{minor}}
+          branches: |
+            release/*
+
+      - name: Debug Metadata Outputs
+        run: |
+          echo "Tags: ${{ steps.meta.outputs.tags }}"
+          echo "Labels: ${{ steps.meta.outputs.labels }}"
+          echo "Images: ${{ steps.meta.outputs.images }}"
+          echo "Meta Outputs: ${{ toJson(steps.meta.outputs) }}"
+
 
       - name: Build and push
         uses: docker/build-push-action@v5
