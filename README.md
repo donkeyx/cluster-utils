@@ -25,7 +25,7 @@ A modern, lightweight Docker container designed for Kubernetes cluster debugging
 - 🔧 **Latest Tools** - Automatically fetches latest versions (k6, etc.)
 - 📦 **Optimized Size** - Single-layer build, minimal footprint (~220MB)
 
-* **Container Registry**: `ghcr.io/donkeyx/cluster-utils:latest` (GitHub) or `donkeyx/cluster-utils:latest` (DockerHub)
+* **Container Registry**: `donkeyx/cluster-utils:latest` (DockerHub) or `ghcr.io/donkeyx/cluster-utils:latest` (GitHub)
 
 ## 🚀 Usage
 
@@ -35,11 +35,12 @@ For immediate interactive shell access without deployment:
 
 ```bash
 # Interactive shell (with explicit zsh entry)
-docker run -it --rm --entrypoint=/bin/zsh ghcr.io/donkeyx/cluster-utils:latest
+docker run -it --rm --entrypoint=/bin/zsh donkeyx/cluster-utils:latest
 
 # Alternative: Let auto-shell switching handle it (sh → zsh automatically)  
-docker run -it --rm --entrypoint=/bin/sh ghcr.io/donkeyx/cluster-utils:latest
+docker run -it --rm --entrypoint=/bin/sh donkeyx/cluster-utils:latest
 
+# GitHub Container Registry alternative: ghcr.io/donkeyx/cluster-utils:latest
 # Note: Replace 'docker' with 'podman' if using Podman instead
 ```
 
@@ -156,11 +157,11 @@ docker exec -it cluster-utils-test sh
 ### Container Runtime Options
 
 ```bash
-# Run with Docker (GitHub Container Registry - recommended)
-docker run -d --rm --name cluster-utils ghcr.io/donkeyx/cluster-utils:latest
-
-# Alternative: DockerHub registry
+# Run with Docker (DockerHub - recommended)
 docker run -d --rm --name cluster-utils donkeyx/cluster-utils:latest
+
+# Alternative: GitHub Container Registry
+docker run -d --rm --name cluster-utils ghcr.io/donkeyx/cluster-utils:latest
 
 # Connect to running container (any shell command gives you zsh):
 docker exec -it cluster-utils sh
