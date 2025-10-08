@@ -2,111 +2,104 @@ name: Docker build and push
 
 on:
   push:
-    branches: [ master, 'release/*']
-    tags: [ 'v*.*.*' ]
-  pull_request:
-    branches: [ master ]
-
-env:
-  IMAGE_NAME: ${{ github.repository }}
-
+    tags:
+      - "v*"
+    branches:
+      - "release/*"
 
 jobs:
-  build:
-    environment: deployment # this gets the secrets for deployments
-
+  cache:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
-
+    environment: ci
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Cache Go packages and Docker layers
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+            /tmp/.buildx-cache
+          key: go-docker-${{ runner.os }}-${{ hashFiles('**/*.go') }}
+          restore-keys: |
+            go-docker-${{ runner.os }}-
 
-      - name: Capture build vars
-        id: vars
-        shell: bash
-        run: |
-          git_ref=$(echo ${GITHUB_REF#refs/*/}| tr "/" "-" )
-          hash=${GITHUB_SHA::6}
+  docker:
+    needs: cache
+    runs-on: ubuntu-latest
+    environment: ci
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-          if [ "$GITHUB_REF_TYPE" == "tag" ]; then
-            echo "processing tag"
-            docker_tag="$git_ref"
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.25
 
-            echo "docker tag string latest"
-            latest_tag=" -t \donkeyx/cluster-utils:latest"
+      - name: Cache Go packages (reuse cache from 'cache' job)
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: go-${{ runner.os }}-${{ hashFiles('**/*.go') }}
+          restore-keys: |
+            go-${{ runner.os }}-
 
-          fi
+      - name: Docker metadata setup
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ghcr.io/donkeyx/cluster-utils
+            docker.io/donkeyx/cluster-utils
+          tags: |
+            type=sha
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}
+            type=semver,pattern={{major}}.{{minor}}
+          branches: |
+            release/*
 
-          if [ "$GITHUB_REF_TYPE" == "branch" ]; then
-            echo "processing branch"
-
-            if [ "$git_ref" == "master" ]; then
-              echo "match latest"
-              docker_tag=latest
-            fi
-            
-            docker_tag="${git_ref}"
-          fi
-
-          echo "branch: $git_ref"
-          echo "hash: $hash"
-          echo "dockertag: $docker_tag"
-
-          echo "git_ref=$git_ref" >> $GITHUB_OUTPUT
-          echo "sha_short=$hash" >> $GITHUB_OUTPUT
-          echo "docker_tag=$docker_tag" >> $GITHUB_OUTPUT
-          echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
-          
-      # for multi architecture builds arm/x86
-      - name: Setup QEMU runner
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      - name: Setup Docker buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        # with:
+        #   driver-opts: |
+        #     image=moby/buildkit:v0.15.0
+        #   buildkitd-flags: --debug
 
-      # ################################
-      # push docker images (dockerhub/github)
-      # ################################ 
-      - name: Log into registry (dockerhub)
-        if: github.event_name != 'pull_request' && secrets.DOCKERHUB_USERNAME != ''
+
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: docker.io
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-
-      - name: Build and push docker image (dockerhub)
-        if: github.event_name != 'pull_request' && secrets.DOCKERHUB_USER != ''
-        run: | 
-
-          docker buildx build \
-          --platform linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64 \
-          -t "donkeyx/cluster-utils:${{ steps.vars.outputs.docker_tag }}" \
-          ${{ steps.vars.outputs.latest_tag }} \
-          --push \
-          .
-
-
-      - name: Log into registry (github)
-        if: github.event_name != 'pull_request'
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-
-      - name: Build and push docker image (github)
-        run: | 
-          docker buildx build \
-          --platform linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64 \
-          -t "ghcr.io/${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.docker_tag }}" \
-          ${{ steps.vars.outputs.latest_tag }} \
-          --push \
-          .
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
