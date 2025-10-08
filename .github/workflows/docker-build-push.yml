@@ -15,16 +15,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Cache Go packages and Docker layers
+      - name: Cache Docker layers
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-            /tmp/.buildx-cache
-          key: go-docker-${{ runner.os }}-${{ hashFiles('**/*.go') }}
+          path: /tmp/.buildx-cache
+          key: docker-buildx-${{ runner.os }}-${{ github.sha }}
           restore-keys: |
-            go-docker-${{ runner.os }}-
+            docker-buildx-${{ runner.os }}-
 
   docker:
     needs: cache
@@ -38,20 +35,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v4
+      - name: Cache Docker layers (reuse cache from 'cache' job)
+        uses: actions/cache@v4
         with:
-          go-version: 1.25
-
-      - name: Cache Go packages (reuse cache from 'cache' job)
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: go-${{ runner.os }}-${{ hashFiles('**/*.go') }}
+          path: /tmp/.buildx-cache
+          key: docker-buildx-${{ runner.os }}-${{ github.sha }}
           restore-keys: |
-            go-${{ runner.os }}-
+            docker-buildx-${{ runner.os }}-
 
       - name: Docker metadata setup
         id: meta
@@ -66,8 +56,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}
             type=semver,pattern={{major}}.{{minor}}
-          branches: |
-            release/*
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
