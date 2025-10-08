@@ -1,15 +1,23 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: cluster-utils
   labels:
+    app: cluster-utils
     purpose: testing
 spec:
-  containers:
-    - name: cluster-utils
-      image: donkeyx/cluster-utils:latest
-      env:
-        - name: RUNTIME
-          value: "1800"
-  restartPolicy: Never
-
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cluster-utils
+  template:
+    metadata:
+      labels:
+        app: cluster-utils
+    spec:
+      containers:
+        - name: cluster-utils
+          #image: ghcr.io/donkeyx/cluster-utils:latest
+          image: donkeyx/cluster-utils:latest
+          # Remove RUNTIME env if it was only for timeout
+      restartPolicy: Always

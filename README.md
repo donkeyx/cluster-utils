@@ -1,102 +1,193 @@
-# cluster-utils
+# 🐴 DonkeyX's Cluster Utils
+
+```
+╭────────────────────────────────────────╮
+|         🐴 DonkeyX's Cluster Utils      │
+╰────────────────────────────────────────╯
+
+        //\\
+       (/oo\)   .----.
+       (____)  | K8s |
+        /||\   '----'
+       //||\\   🐛 Debug Mode
+      ^^ ^^ ^^
+   "Braying at broken clusters!"
+```
 
 ## Description
 
-Sample docker image to give you a bash session into your cluster, with lots of tools for testing
-network routes etc. I find it super handy when i am testing istio routes/dns and security group
-access.
+A modern, lightweight Docker container designed for Kubernetes cluster debugging and network troubleshooting. Built on Alpine Linux with a comprehensive toolkit for testing network routes, DNS resolution, database connections, and service mesh configurations.
 
-This container will by default run for 30mins before exiting. You can override this behavior
-by modifying the env param ```RUNTIME=1234```. This can be done in the kubes pod definition or
-passed to docker at runtime.
+**Key Features:**
+- 🚀 **Runs Continuously** - No timeouts, persistent debugging environment
+- 🎨 **Beautiful Welcome** - Colorized interface with tool inventory
+- 🐚 **Modern Shell** - Zsh with Oh My Zsh for enhanced productivity  
+- 🔧 **Latest Tools** - Automatically fetches latest versions (k6, etc.)
+- 📦 **Optimized Size** - Single-layer build, minimal footprint (~220MB)
 
-* dockerhub :  https://hub.docker.com/r/donkeyx/cluster-utils
+* **Container Registry**: `ghcr.io/donkeyx/cluster-utils:latest` or `donkeyx/cluster-utils:latest`
 
-## Usage
+## 🚀 Usage
 
-### run image in k8 cluster:
+### Deploy to Kubernetes Cluster
 
-You can run the pod in your cluster with the commands below, this will start the container
-in the default namespace and timeout in 30mins.
+Deploy as a **Deployment** (runs continuously, no timeouts):
+
 ```bash
-# apply pod config with default 30min timeout
-kubectl -n default \
-    apply -f https://raw.githubusercontent.com/donkeyx/cluster-utils/master/k8s-cluster-utils.yml
+# Deploy the cluster utilities as a persistent deployment
+kubectl apply -f https://raw.githubusercontent.com/donkeyx/cluster-utils/master/k8s-cluster-utils.yml
 
-# list the pod
-$ kubectl get pods -n default
-NAME            READY   STATUS    RESTARTS   AGE
-cluster-utils   1/1     Running   0          2m18s
+# Check the deployment
+kubectl get deployments
+NAME            READY   UP-TO-DATE   AVAILABLE   AGE
+cluster-utils   1/1     1            1           30s
+
+# List the pod
+kubectl get pods -l app=cluster-utils
+NAME                             READY   STATUS    RESTARTS   AGE
+cluster-utils-7b8c9d4f5d-x9k2j   1/1     Running   0          45s
 ```
 
-Now the pod is running, you can exec into it and.. do whatever you need within the context of
-your cluster/namespace.
-```bash
-# jump into container with zsh shell + ohmyzsh
-        ................           root@5341f0387b50
-       ∴::::::::::::::::∴          OS: Alpine Linux
-      ∴::::::::::::::::::∴         Kernel: x86_64 Linux 4.19.76-linuxkit
-     ∴::::::::::::::::::::∴        Uptime: 6d 19h 30m
-    ∴:::::::. :::::':::::::∴       Packages: 67
-   ∴:::::::.   ;::; ::::::::∴      Shell: ash
-  ∴::::::;      ∵     :::::::∴     Disk:  /  ()
- ∴:::::.     .         .::::::∴    CPU: Intel Core i7-7700HQ @ 4x 2.8GHz
- ::::::     :::.    .    ::::::    RAM: 463MiB / 1991MiB
- ∵::::     ::::::.  ::.   ::::∵
-  ∵:..   .:;::::::: :::.  :::∵
-   ∵::::::::::::::::::::::::∵
-    ∵::::::::::::::::::::::∵
-     ∵::::::::::::::::::::∵
-      ::::::::::::::::::::
-       ∵::::::::::::::::∵
+### Connect to the Container
 
+Multiple ways to connect - **all automatically give you zsh**:
+
+```bash
+# Any of these will give you zsh with the welcome message:
+kubectl exec -it deployment/cluster-utils -- sh
+kubectl exec -it deployment/cluster-utils -- zsh  
+kubectl exec -it deployment/cluster-utils -- /bin/sh
+
+# You'll see the welcome screen:
+╭────────────────────────────────────────╮
+|         🐴 DonkeyX's Cluster Utils      │
+╰────────────────────────────────────────╯
+
+        //\\
+       (/oo\)   .----.
+       (____)  | K8s |
+        /||\   '----'
+       //||\\   🐛 Debug Mode
+      ^^ ^^ ^^
+   "Braying at broken clusters!"
+
+🚀 Welcome to the Kubernetes Cluster Utilities! 🚀
+=====================================================
+
+📦 Available Tools:
+
+🌐 Network & DNS:
+  • dig, nslookup, host (bind-tools)
+  • nc (netcat-openbsd)  
+  • curl, wget
+
+🗄️  Database Clients:
+  • psql (PostgreSQL client v17.6)
+  • redis-cli (Redis client)
+
+🛠️  Development & Utilities:
+  • git (version control)
+  • jq (JSON processor)
+  • vim (text editor)
+  • tmux (terminal multiplexer)
+  • npm/node (JavaScript runtime)
+
+⚡ Load Testing:
+  • k6 (latest version - auto-updated)
+
+🐚 Shell Environment:
+  • zsh with Oh My Zsh
+  • Custom prompt and completions
 ```
 
 
-### Build image locally:
+## 🔨 Local Development
 
-You can build the image locally if you like and then push to your own repo for testing
+### Build Image Locally
 
 ```bash
-# clone repo
-git@github.com:donkeyx/cluster-utils.git
+# Clone the repository
+git clone https://github.com/donkeyx/cluster-utils.git
 cd cluster-utils
 
-# build and tag
-docker build . -t donkeyx/cluster-utils
+# Build with Docker or Podman
+docker build -t cluster-utils:local .
+# OR
+podman build -t cluster-utils:local .
 
-# push
-docker push YOUR_REPO.../cluster-utils:latest
+# Run locally for testing
+docker run -d --name cluster-utils-test cluster-utils:local
+docker exec -it cluster-utils-test sh  # Automatically switches to zsh!
 ```
 
-### Start container:
+### Container Runtime Options
 
-Follow the build process above
 ```bash
+# Run with Docker
+docker run -d --rm --name cluster-utils donkeyx/cluster-utils:latest
 
-$ docker run -e RUNTIME=60 -d --rm --name cluster-utils donkeyx/cluster-utils
-1a3b19d75ab9a536ff531935e9da9f9c549d288cb0cab0d6bbdda2249b4ea680
+# Run with Podman  
+podman run -d --rm --name cluster-utils donkeyx/cluster-utils:latest
 
-$ docker ps
-CONTAINER ID        IMAGE                   COMMAND                CREATED             STATUS              PORTS               NAMES
-1a3b19d75ab9        donkeyx/cluster-utils   "sh /tmp/sleeper.sh"   3 seconds ago       Up 3 seconds                            cluster-utils
-
-$ docker exec -it cluster-utils zsh
-➜  /tmp
-
+# Connect (any of these work - all give you zsh):
+docker exec -it cluster-utils sh
+podman exec -it cluster-utils zsh
+kubectl exec -it deployment/cluster-utils -- /bin/sh
 ```
 
-### Some useful command and packages available
+## 🧰 Available Tools & Commands
 
+### Network Diagnostics
 ```bash
-
-# check port is open
+# Check if port is open
 nc -z -v -w5 10.1.1.51 8080
 
-# check dns
+# DNS resolution  
 dig google.com
+nslookup my-service.default.svc.cluster.local
 
-# traceroute path for request
-traceroute my-internal-service.com
-
+# HTTP testing
+curl -v https://api.example.com
+wget --spider https://my-service/health
 ```
+
+### Database Testing
+```bash
+# PostgreSQL connection
+psql -h postgres-host -U username -d database
+
+# Redis testing
+redis-cli -h redis-host ping
+redis-cli -h redis-host info server
+```
+
+### Load Testing
+```bash
+# k6 load testing (latest version auto-installed)
+k6 run --vus 10 --duration 30s script.js
+k6 run --http-debug https://api.example.com
+```
+
+### Container & Kubernetes Debugging
+```bash
+# Check container environment
+env | grep KUBERNETES
+cat /var/run/secrets/kubernetes.io/serviceaccount/namespace
+
+# Network troubleshooting within cluster
+nc -z -v service-name 80
+dig service-name.namespace.svc.cluster.local
+```
+
+## 🎯 Key Improvements
+
+- **No Timeouts**: Container runs continuously until manually stopped
+- **Modern Tools**: Latest k6, PostgreSQL 17.6, npm instead of full Node.js
+- **Optimized Size**: ~220MB (removed MongoDB tools, optimized layers)  
+- **Better UX**: Auto-switches to zsh, colorized welcome, tool inventory
+- **Deployment Ready**: Kubernetes Deployment (not Job) for persistence
+- **Multi-Shell Support**: Works with `sh`, `zsh`, or `bash` connections
+
+## 🐴 Why "Braying at Broken Clusters"?
+
+Because sometimes your clusters are stubborn as a mule, and you need the right tools to debug them! This container gives you everything you need to troubleshoot network issues, test services, and get your Kubernetes clusters working smoothly again. 🎯
