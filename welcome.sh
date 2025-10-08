@@ -30,7 +30,7 @@ cat << 'EOF'
 
 EOF
 printf "${NC}"
-printf "${BOLD}${GREEN}🚀 Welcome to the Kubernetes Cluster Utilities! 🚀${NC}\n"
+printf "${BOLD}${GREEN}🚀 Welcome to the Networking Cluster Utilities! 🚀${NC}\n"
 printf "${BOLD}=====================================================${NC}\n"
 echo ""
 printf "${BOLD}${BLUE}📦 Available Tools:${NC}\n"
