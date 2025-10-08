@@ -17,7 +17,24 @@ spec:
     spec:
       containers:
         - name: cluster-utils
-          #image: ghcr.io/donkeyx/cluster-utils:latest
-          image: donkeyx/cluster-utils:latest
+          image: ghcr.io/donkeyx/cluster-utils:latest
+          # Alternative: donkeyx/cluster-utils:latest (DockerHub)
           # Remove RUNTIME env if it was only for timeout
       restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-utils
+  labels:
+    app: cluster-utils
+    purpose: testing
+spec:
+  selector:
+    app: cluster-utils
+  ports:
+    - name: dummy
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+  type: ClusterIP

@@ -25,7 +25,7 @@ A modern, lightweight Docker container designed for Kubernetes cluster debugging
 - 🔧 **Latest Tools** - Automatically fetches latest versions (k6, etc.)
 - 📦 **Optimized Size** - Single-layer build, minimal footprint (~220MB)
 
-* **Container Registry**: `ghcr.io/donkeyx/cluster-utils:latest` or `donkeyx/cluster-utils:latest`
+* **Container Registry**: `ghcr.io/donkeyx/cluster-utils:latest` (GitHub) or `donkeyx/cluster-utils:latest` (DockerHub)
 
 ## 🚀 Usage
 
@@ -36,11 +36,11 @@ For immediate interactive shell access without deployment:
 ```bash
 # Interactive shell (with explicit zsh entry)
 docker run -it --rm --entrypoint=/bin/zsh ghcr.io/donkeyx/cluster-utils:latest
-podman run -it --rm --entrypoint=/bin/zsh ghcr.io/donkeyx/cluster-utils:latest
 
-# Alternative: Let auto-shell switching handle it (sh → zsh automatically)
+# Alternative: Let auto-shell switching handle it (sh → zsh automatically)  
 docker run -it --rm --entrypoint=/bin/sh ghcr.io/donkeyx/cluster-utils:latest
-podman run -it --rm --entrypoint=/bin/sh ghcr.io/donkeyx/cluster-utils:latest
+
+# Note: Replace 'docker' with 'podman' if using Podman instead
 ```
 
 **What you get:**
@@ -57,26 +57,27 @@ Deploy as a **Deployment** (runs continuously, no timeouts):
 # Deploy the cluster utilities as a persistent deployment
 kubectl apply -f https://raw.githubusercontent.com/donkeyx/cluster-utils/master/k8s-cluster-utils.yml
 
-# Check the deployment
-kubectl get deployments
-NAME            READY   UP-TO-DATE   AVAILABLE   AGE
-cluster-utils   1/1     1            1           30s
+# Check the deployment and service
+kubectl get deployments,services -l app=cluster-utils
+NAME                            READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/cluster-utils   1/1     1            1           30s
 
-# List the pod
-kubectl get pods -l app=cluster-utils
-NAME                             READY   STATUS    RESTARTS   AGE
-cluster-utils-7b8c9d4f5d-x9k2j   1/1     Running   0          45s
+NAME                    TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+service/cluster-utils   ClusterIP   10.96.45.123   <none>        8080/TCP   30s
 ```
 
 ### Connect to Deployed Container
 
-Multiple ways to connect to the **deployed** container - **all automatically give you zsh**:
+**Easy connection via service (no need to know pod name!):**
 
 ```bash
-# Any of these will give you zsh with the welcome message:
+# Connect using the service - simplest method:
+kubectl exec -it service/cluster-utils -- sh
+kubectl exec -it service/cluster-utils -- zsh
+
+# Alternative: Connect via deployment:
 kubectl exec -it deployment/cluster-utils -- sh
-kubectl exec -it deployment/cluster-utils -- zsh  
-kubectl exec -it deployment/cluster-utils -- /bin/sh
+kubectl exec -it deployment/cluster-utils -- zsh
 
 # You'll see the welcome screen:
 ╭────────────────────────────────────────╮
@@ -124,7 +125,7 @@ kubectl exec -it deployment/cluster-utils -- /bin/sh
 
 | Mode | Use Case | Command Pattern |
 |------|----------|-----------------|
-| **Interactive** | Quick local debugging, testing tools | `docker/podman run -it --rm --entrypoint=/bin/zsh ...` |
+| **Interactive** | Quick local debugging, testing tools | `docker run -it --rm --entrypoint=/bin/zsh ...` |
 | **Deployment** | Persistent cluster pod, team access | `kubectl apply -f k8s-cluster-utils.yml` |
 
 ### Deploy to Kubernetes Cluster
@@ -142,34 +143,34 @@ cd cluster-utils
 
 # Build the image
 docker build -t cluster-utils:local .
-podman build -t cluster-utils:local .
 
 # Run locally for testing
 docker run -d --name cluster-utils-test cluster-utils:local
-podman run -d --name cluster-utils-test cluster-utils:local
 
-# Connect to test container
-docker exec -it cluster-utils-test sh  # Automatically switches to zsh!
-podman exec -it cluster-utils-test sh
+# Connect to test container (automatically switches to zsh!)
+docker exec -it cluster-utils-test sh
+
+# Note: All commands work with Podman by replacing 'docker' with 'podman'
 ```
 
 ### Container Runtime Options
 
 ```bash
-# Run with Docker
-docker run -d --rm --name cluster-utils donkeyx/cluster-utils:latest
+# Run with Docker (GitHub Container Registry - recommended)
 docker run -d --rm --name cluster-utils ghcr.io/donkeyx/cluster-utils:latest
 
-# Run with Podman  
-podman run -d --rm --name cluster-utils donkeyx/cluster-utils:latest
-podman run -d --rm --name cluster-utils ghcr.io/donkeyx/cluster-utils:latest
+# Alternative: DockerHub registry
+docker run -d --rm --name cluster-utils donkeyx/cluster-utils:latest
 
-# Connect to running container (any of these work - all give you zsh):
+# Connect to running container (any shell command gives you zsh):
 docker exec -it cluster-utils sh
 docker exec -it cluster-utils zsh
-podman exec -it cluster-utils sh  
-podman exec -it cluster-utils zsh
-kubectl exec -it deployment/cluster-utils -- /bin/sh
+
+# Kubernetes connections (easiest with service):
+kubectl exec -it service/cluster-utils -- sh
+kubectl exec -it deployment/cluster-utils -- sh
+
+# Note: Podman users can replace 'docker' with 'podman' in all commands
 ```
 
 ## 🧰 Available Tools & Commands
