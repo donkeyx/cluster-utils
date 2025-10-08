@@ -11,7 +11,7 @@
         /||\   '----'
        //||\\   🐛 Debug Mode
       ^^ ^^ ^^
-   "Braying at broken clusters!"
+   "Lets break some Shit!"
 ```
 
 ## Description
@@ -28,6 +28,26 @@ A modern, lightweight Docker container designed for Kubernetes cluster debugging
 * **Container Registry**: `ghcr.io/donkeyx/cluster-utils:latest` or `donkeyx/cluster-utils:latest`
 
 ## 🚀 Usage
+
+### Quick Interactive Access (Local)
+
+For immediate interactive shell access without deployment:
+
+```bash
+# Interactive shell (with explicit zsh entry)
+docker run -it --rm --entrypoint=/bin/zsh ghcr.io/donkeyx/cluster-utils:latest
+podman run -it --rm --entrypoint=/bin/zsh ghcr.io/donkeyx/cluster-utils:latest
+
+# Alternative: Let auto-shell switching handle it (sh → zsh automatically)
+docker run -it --rm --entrypoint=/bin/sh ghcr.io/donkeyx/cluster-utils:latest
+podman run -it --rm --entrypoint=/bin/sh ghcr.io/donkeyx/cluster-utils:latest
+```
+
+**What you get:**
+- ✅ Immediate zsh shell with Oh My Zsh
+- ✅ Welcome screen with ASCII donkey and tool inventory
+- ✅ All debugging tools ready to use  
+- ✅ Auto-cleanup when you exit (`--rm`)
 
 ### Deploy to Kubernetes Cluster
 
@@ -48,9 +68,9 @@ NAME                             READY   STATUS    RESTARTS   AGE
 cluster-utils-7b8c9d4f5d-x9k2j   1/1     Running   0          45s
 ```
 
-### Connect to the Container
+### Connect to Deployed Container
 
-Multiple ways to connect - **all automatically give you zsh**:
+Multiple ways to connect to the **deployed** container - **all automatically give you zsh**:
 
 ```bash
 # Any of these will give you zsh with the welcome message:
@@ -100,6 +120,16 @@ kubectl exec -it deployment/cluster-utils -- /bin/sh
   • Custom prompt and completions
 ```
 
+## 🎯 **Two Usage Modes**
+
+| Mode | Use Case | Command Pattern |
+|------|----------|-----------------|
+| **Interactive** | Quick local debugging, testing tools | `docker/podman run -it --rm --entrypoint=/bin/zsh ...` |
+| **Deployment** | Persistent cluster pod, team access | `kubectl apply -f k8s-cluster-utils.yml` |
+
+### Deploy to Kubernetes Cluster
+```
+
 
 ## 🔨 Local Development
 
@@ -110,14 +140,17 @@ kubectl exec -it deployment/cluster-utils -- /bin/sh
 git clone https://github.com/donkeyx/cluster-utils.git
 cd cluster-utils
 
-# Build with Docker or Podman
+# Build the image
 docker build -t cluster-utils:local .
-# OR
 podman build -t cluster-utils:local .
 
 # Run locally for testing
 docker run -d --name cluster-utils-test cluster-utils:local
+podman run -d --name cluster-utils-test cluster-utils:local
+
+# Connect to test container
 docker exec -it cluster-utils-test sh  # Automatically switches to zsh!
+podman exec -it cluster-utils-test sh
 ```
 
 ### Container Runtime Options
@@ -125,12 +158,16 @@ docker exec -it cluster-utils-test sh  # Automatically switches to zsh!
 ```bash
 # Run with Docker
 docker run -d --rm --name cluster-utils donkeyx/cluster-utils:latest
+docker run -d --rm --name cluster-utils ghcr.io/donkeyx/cluster-utils:latest
 
 # Run with Podman  
 podman run -d --rm --name cluster-utils donkeyx/cluster-utils:latest
+podman run -d --rm --name cluster-utils ghcr.io/donkeyx/cluster-utils:latest
 
-# Connect (any of these work - all give you zsh):
+# Connect to running container (any of these work - all give you zsh):
 docker exec -it cluster-utils sh
+docker exec -it cluster-utils zsh
+podman exec -it cluster-utils sh  
 podman exec -it cluster-utils zsh
 kubectl exec -it deployment/cluster-utils -- /bin/sh
 ```
