@@ -1,26 +1,18 @@
 name: Docker build and push
+
 on:
   push:
     tags:
       - "v*"
     branches:
+      - "master"
       - "release/*"
+  pull_request:
+    branches:
+      - "master"
 
 jobs:
-  cache:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
-
   docker:
-    needs: cache
     runs-on: ubuntu-latest
     environment: ci
     permissions:
@@ -31,26 +23,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Docker meta (GHCR)
+      - name: Docker metadata setup
         id: meta
         uses: docker/metadata-action@v4
         with:
@@ -63,25 +36,51 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}
             type=semver,pattern={{major}}.{{minor}}
-          branches: |
-            release/*
+            type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Debug Metadata Outputs
-        run: |
-          echo "Tags: ${{ steps.meta.outputs.tags }}"
-          echo "Labels: ${{ steps.meta.outputs.labels }}"
-          echo "Images: ${{ steps.meta.outputs.images }}"
-          echo "Meta Outputs: ${{ toJson(steps.meta.outputs) }}"
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        # with:
+        #   driver-opts: |
+        #     image=moby/buildkit:v0.15.0
+        #   buildkitd-flags: --debug
+
+
+      - name: Login to Docker Hub
+        if: github.event_name != 'pull_request' && vars.DOCKERHUB_USERNAME != ''
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
-          build-args: VERSION=${{ env.VERSION }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: false
+          sbom: false
+
+      - name: Update DockerHub README
+        if: github.event_name != 'pull_request' && vars.DOCKERHUB_USERNAME != ''
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: donkeyx/cluster-utils
+          readme-filepath: ./README.md

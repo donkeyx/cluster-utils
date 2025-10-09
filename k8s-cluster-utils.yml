@@ -1,18 +1,40 @@
-apiVersion: batch/v1
-kind: Job
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: cluster-utils
   labels:
     app: cluster-utils
     purpose: testing
 spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cluster-utils
   template:
+    metadata:
+      labels:
+        app: cluster-utils
     spec:
       containers:
         - name: cluster-utils
-          image: donkeyx/cluster-utils:latest
-          env:
-            - name: RUNTIME
-              value: "1800"
-      restartPolicy: Never
-  ttlSecondsAfterFinished: 1800
+          image: ghcr.io/donkeyx/cluster-utils:latest
+          # Alternative: donkeyx/cluster-utils:latest (DockerHub)
+          # Remove RUNTIME env if it was only for timeout
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-utils
+  labels:
+    app: cluster-utils
+    purpose: testing
+spec:
+  selector:
+    app: cluster-utils
+  ports:
+    - name: dummy
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+  type: ClusterIP

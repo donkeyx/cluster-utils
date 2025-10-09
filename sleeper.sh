@@ -2,10 +2,10 @@
 
 set -eu
 
-# run for 30mins before ending
-runtime=${RUNTIME:-1800}
+echo "Container running continuously - ready for cluster utilities work"
+echo "Use kubectl exec to connect and run commands interactively"
+echo "Container will keep running until manually stopped"
 
-echo "will run for $runtime seconds, before exiting container"
-echo "-- you can override this by passing RUNTIME=33 to the container"
-
-sleep $runtime
+# Keep container running indefinitely
+# Using tail -f /dev/null is a common pattern for keeping containers alive
+tail -f /dev/null
